@@ -147,7 +147,7 @@ int main(){
     newGame();
     
     while(true){
-        printUI()();
+        printUI();
         char input;
         cin >>input;
         
