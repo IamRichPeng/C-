@@ -48,7 +48,7 @@ void newGame(){
 }
 
 //输出用户界面
-void printMenu(){
+void printUI(){
     system("clear"); //clear screen
     for(int i =0;i < 4; ++i){
         for(int j =0; j<4;++j)
@@ -147,7 +147,7 @@ int main(){
     newGame();
     
     while(true){
-        printMenu();
+        printUI()();
         char input;
         cin >>input;
         
