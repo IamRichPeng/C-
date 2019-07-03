@@ -15,7 +15,11 @@
 #include "curses.h"
 #include <iomanip>
 
+#define Win 2187
 using namespace std;
+
+// set a global variable
+bool failuare;
 
 //棋盘
 int board[4][4];
@@ -72,6 +76,24 @@ void printUI(){
     cout<<"N: new game, A: left S: down, D: right , W:up, Q: quit\n";
 }
 
+//检测失败
+void detectFailure(int canAddition){
+    int a = 16;
+    if (canAddition == 0){
+        for(int i =0;i < 4; ++i){
+            for(int j =0; j<4;++j)
+        if (board[i][j] != 0) {
+            a--;
+        }
+        }
+        if(a==0)
+        failuare = true;//输了，不能移动且没有空位了
+    }
+    else
+        failuare = false;
+}
+
+
 //上下左右移动！！**********************************************************
 
 bool canDoMove(int row, int column, int nextRow, int nextColumn){
@@ -87,7 +109,7 @@ bool canDoMove(int row, int column, int nextRow, int nextColumn){
     return true;
 }
 
-void applyMove(int direction){
+bool applyMove(int direction){
     // default上，左
     int startRow = 0, startColumn = 0;
     int rowStep = 1, columnStep = 1;
@@ -122,6 +144,10 @@ void applyMove(int direction){
                     movePossible = 1;
                     canAddition = 1;
                 }
+                detectFailure(canAddition);
+                
+                if (board[nextI][nextJ] == Win)
+                    return true;
             }
     }
     while(movePossible);
@@ -131,7 +157,7 @@ void applyMove(int direction){
         pair<int, int> pos = generateUnoccupiedPosition();
         board[pos.first][pos.second] = randomNum();
     }
-    
+    return false;
     
 }
 

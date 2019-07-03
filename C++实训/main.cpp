@@ -23,7 +23,7 @@ void newGame();
 void printUI();
 //上下左右移动！！**********************************************************
 bool canDoMove(int , int , int , int);
-void applyMove(int);
+bool applyMove(int);
 
 
 
@@ -64,7 +64,16 @@ int main(){
                     int currentDirection = resignDir[input];
                     
                     //移动函数
-                    applyMove(currentDirection);
+                    int success = applyMove(currentDirection);
+                    if(success){
+                        cout<<" *************YOU WIN*************\n";
+                        break;
+                    }
+                    else if (failuare){
+                        cout<<" *************YOU SUCK************\n";
+                        break;
+                    }
+                    else continue;
                 }
                 
             }
