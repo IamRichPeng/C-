@@ -9,9 +9,8 @@
 #include<iostream>
 #include <ctime>
 #include <cstdlib>
-#include "curses.h"
-#include <iomanip>
 #include "2048.h"
+#include "OOXXgame.h"
 
 using namespace std;
 
@@ -25,13 +24,17 @@ void printUI();
 bool canDoMove(int , int , int , int);
 bool applyMove(int);
 
+void  mainStream();
 
 
 int main(){
     
+    //generate a random value for Generating new numbers at randam position
+    srand(time(0));
+    
     char gameMode;
     //Print Menu
-    cout<< " Pick a game you can't win\n";
+    cout<< "\nPick a game you can't win\n";
     cout<< "1. Hysterical 2048; 2.A bot u can't beat 3.Exit game\n";
     cin >> gameMode;
     
@@ -39,48 +42,11 @@ int main(){
         
     switch (gameMode) {
         case 49:
-            //generate a random value for Generating new numbers at randam position
-            srand(time(0));
-            
-            //把用户输入的asdw指令转化为简单int
-            char resignDir[128];
-            resignDir['s'] = 0;//下
-            resignDir['d'] = 1;//右
-            resignDir['w'] = 2;//上
-            resignDir['a'] = 3;//左
-            
-            newGame();
-            
-            while(true){
-                printUI();
-                char input;
-                cin >>input;
-                
-                if (input == 'n')
-                    newGame();
-                else if (input == 'q')
-                    break;
-                else{
-                    int currentDirection = resignDir[input];
-                    
-                    //移动函数
-                    int success = applyMove(currentDirection);
-                    if(success){
-                        cout<<" *************YOU WIN*************\n";
-                        break;
-                    }
-                    else if (failuare){
-                        cout<<" *************YOU SUCK************\n";
-                        break;
-                    }
-                    else continue;
-                }
-                
-            }
-            
+            mainStream();
             break;
             
         case 50:
+            mainStream2();
             break;
         default:
             cout<<"Are u Serious? Put a valid number!\n\n";

@@ -26,6 +26,7 @@
 		23A8742422CBAB130082E060 /* C++实训 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "C++实训"; sourceTree = BUILT_PRODUCTS_DIR; };
 		23A8742722CBAB140082E060 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		23A8743022CCF0010082E060 /* 2048.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 2048.h; sourceTree = "<group>"; };
+		23A8745922CFB5630082E060 /* OOXXgame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OOXXgame.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +61,7 @@
 			children = (
 				23A8742722CBAB140082E060 /* main.cpp */,
 				23A8743022CCF0010082E060 /* 2048.h */,
+				23A8745922CFB5630082E060 /* OOXXgame.h */,
 			);
 			path = "C++实训";
 			sourceTree = "<group>";

@@ -12,7 +12,7 @@
 #include<iostream>
 #include <ctime>
 #include <cstdlib>
-#include "curses.h"
+//#include "curses.h"
 #include <iomanip>
 
 #define Win 2187
@@ -112,27 +112,27 @@ bool canDoMove(int row, int column, int nextRow, int nextColumn){
 bool applyMove(int direction){
     // default上，左
     int startRow = 0, startColumn = 0;
-    int rowStep = 1, columnStep = 1;
+    int rowDir = 1, colDir = 1;
     
     //下
     if (direction == 0){
         startRow = 3;
-        rowStep = -1;
+        rowDir = -1;
     }
     
     //右
     if(direction == 1){
         startColumn = 3;
-        columnStep = -1;
+        colDir = -1;
     }
     
     //用循环实现：移动一次，所有数字向该方向移动到不可移动为止。
-    int movePossible, canAddition = 0;
+    int canMove, canAddition = 0;
     
     do{
-        movePossible = 0;
-        for(int i = startRow;i >= 0 && i < 4; i += rowStep)
-            for(int j = startColumn; j >= 0 && j < 4; j += columnStep){
+        canMove = 0;
+        for(int i = startRow;i >= 0 && i < 4; i += rowDir)
+            for(int j = startColumn; j >= 0 && j < 4; j += colDir){
                 int nextI = i + dirRow[direction];
                 int nextJ = j + dirColumn[direction];
                 
@@ -141,7 +141,7 @@ bool applyMove(int direction){
                 if (canDoMove(i,j,nextI,nextJ)){
                     board[nextI][nextJ] += board[i][j];
                     board[i][j] = 0;
-                    movePossible = 1;
+                    canMove = 1;
                     canAddition = 1;
                 }
                 detectFailure(canAddition);
@@ -150,7 +150,7 @@ bool applyMove(int direction){
                     return true;
             }
     }
-    while(movePossible);
+    while(canMove);
     
     //do-while全部移动后，并产生新的数字
     if(canAddition){
@@ -159,6 +159,44 @@ bool applyMove(int direction){
     }
     return false;
     
+}
+
+void mainStream(){
+    //把用户输入的asdw指令转化为简单int
+    char resignDir[128];
+    resignDir['s'] = 0;//下
+    resignDir['d'] = 1;//右
+    resignDir['w'] = 2;//上
+    resignDir['a'] = 3;//左
+    
+    newGame();
+    
+    while(true){
+        printUI();
+        char input;
+        cin >>input;
+        
+        if (input == 'n')
+            newGame();
+        else if (input == 'q')
+            break;
+        else{
+            int currentDirection = resignDir[input];
+            
+            //移动函数
+            int success = applyMove(currentDirection);
+            if(success){
+                cout<<" *************YOU WIN*************\n";
+                break;
+            }
+            else if (failuare){
+                cout<<" *************YOU SUCK************\n";
+                break;
+            }
+            else continue;
+        }
+        
+    }
 }
 
 #endif /* _048_h */
