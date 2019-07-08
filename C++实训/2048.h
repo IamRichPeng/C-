@@ -24,10 +24,6 @@ bool failuare;
 //棋盘
 int board[4][4];
 
-//方向：下（0） 右（1） 上（2） 左（3）,省去用四种case。
-int dirRow[] = {1,0,-1,0};
-int dirColumn[] = {0,1,0,-1};
-
 //找一个空白位置
 pair<int, int> generateUnoccupiedPosition(){
     int occupied,row,column;
@@ -133,8 +129,28 @@ bool applyMove(int direction){
         canMove = 0;
         for(int i = startRow;i >= 0 && i < 4; i += rowDir)
             for(int j = startColumn; j >= 0 && j < 4; j += colDir){
-                int nextI = i + dirRow[direction];
-                int nextJ = j + dirColumn[direction];
+                
+                int nextI = 0,nextJ = 0;
+                switch (direction) {
+                    case 0:
+                        nextI = i + 1;
+                        nextJ = j + 0;
+                        break;
+                    case 1:
+                        nextI = i + 0;
+                        nextJ = j + 1;
+                        break;
+                    case 2:
+                        nextI = i - 1;
+                        nextJ = j + 0;
+                        break;
+                    case 3:
+                        nextI = i + 0;
+                        nextJ = j - 1;
+                        break;
+                    default:
+                        break;
+                }
                 
                 //cout<<i<<" "<<j<<" "<<nextI<<" "<<nextJ<<"\n";
                 //check conditions!
@@ -162,8 +178,8 @@ bool applyMove(int direction){
 }
 
 void mainStream(){
-    //把用户输入的asdw指令转化为简单int
-    char resignDir[128];
+    //把用户输入的asdw指令转化为简单int,查个鸡儿ASCII表
+    int resignDir[128];
     resignDir['s'] = 0;//下
     resignDir['d'] = 1;//右
     resignDir['w'] = 2;//上
@@ -175,6 +191,11 @@ void mainStream(){
         printUI();
         char input;
         cin >>input;
+        
+        while(input != 'n' && input !='a' && input !='s' && input != 'd' && input !='w' && input != 'q' ){
+            cout<<"\n Be a lamb!!! Put a valid number!\n";
+            cin >> input;
+        }
         
         if (input == 'n')
             newGame();

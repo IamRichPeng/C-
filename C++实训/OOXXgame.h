@@ -190,9 +190,6 @@ void  mainStream2() {
     newGame2();
     printUI2();
     
-    // correspond to user input wasd
-    int iRow[] = {1,0,-1,0};
-    int iColumn[] = {0,1,0,-1};
     
     string inputs = "wasd";
     //把用户输入的asdw指令转化为简单int
@@ -209,8 +206,29 @@ void  mainStream2() {
             //输入方位，选位置
             if(inputs.find(input) != string::npos){// not position,读取所有有效方位
                 pair<int, int> nextPos =  PLAYERpredicion;
-                nextPos.first += iRow[resignDir[input]];
-                nextPos.second += iColumn[resignDir[input]];
+                int direction = resignDir[input];
+    
+                switch (direction) {
+                    case 0:
+                        nextPos.first += 1;
+                        nextPos.second += 0;
+                        break;
+                    case 1:
+                        nextPos.first += 0;
+                        nextPos.second += 1;
+                        break;
+                    case 2:
+                        nextPos.first -= 1;
+                        nextPos.second += 0 ;
+                        break;
+                    case 3:
+                        nextPos.first += 0;
+                        nextPos.second -= 1;
+                        break;
+                    default:
+                        break;
+                }
+
                 if(inside(nextPos))
                     PLAYERpredicion = nextPos;
             }
@@ -238,7 +256,7 @@ void  mainStream2() {
     
     char state = detectVictory();
     if( state == -1)
-        cout<< " DRAW!!\n";
+        cout<< "\tDRAW!!\n";
     else if(userchoice == state)
         cout<< state << " You won! Congratulation\n";
     else
