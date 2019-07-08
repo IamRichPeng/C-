@@ -73,7 +73,7 @@ char detectVictory(){
 
 
 void printUI2(){
-    cout<<"\n\n\n\n";
+    system("clear"); //clear screen
     for(int i  = 0; i<3 ; ++i){
         for(int j  = 0; j<3 ; ++j)
             if(make_pair(i, j) ==  PLAYERpredicion && detectVictory() == 0)//有人赢了就不要再输出 预判的下一个玩家。
@@ -178,9 +178,13 @@ void  mainStream2() {
     //递归，一次性列出OOXX所有的可能结果，存储在bestMove中，每一个bestMove["???"](key value) map一个最优填充方案：bestMove.second(map value)。后面调用map:bestmove就好了。
     calculateWinner(".........");
     
-    cout<< " Choose want you want to be O or X\n";
+    cout<< " Choose what you want to be: O or X\n";
     char userchoice;
     cin >> userchoice;
+    while(userchoice != 'O' && userchoice != 'X'){
+        cout<< " Choose what you want to be: O or X\n";
+         cin >> userchoice;
+    }
     
     //   cout<< winner["XXOO....."]<<" "<< bestMove["XXOO....."];
     newGame2();
@@ -203,7 +207,7 @@ void  mainStream2() {
             char input;
             cin >> input;
             //输入方位，选位置
-            if(inputs.find(input) != string::npos){
+            if(inputs.find(input) != string::npos){// not position,读取所有有效方位
                 pair<int, int> nextPos =  PLAYERpredicion;
                 nextPos.first += iRow[resignDir[input]];
                 nextPos.second += iColumn[resignDir[input]];

@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include "2048.h"
 #include "OOXXgame.h"
+#include "TCSnake.h"
 
 using namespace std;
 
@@ -35,10 +36,10 @@ int main(){
     char gameMode;
     //Print Menu
     cout<< "\nPick a game you can't win\n";
-    cout<< "1. Hysterical 2048; 2.A bot u can't beat 3.Exit game\n";
+    cout<< "1. Hysterical 2048; 2.A bot u can't beat; 3.Snake! 4.Exit game\n";
     cin >> gameMode;
     
-    while( gameMode != 51){
+    while( gameMode != 52){
         
     switch (gameMode) {
         case 49:
@@ -48,13 +49,17 @@ int main(){
         case 50:
             mainStream2();
             break;
+        case 51:
+            mainstream3();
+            break;
         default:
             cout<<"Are u Serious? Put a valid number!\n\n";
             break;
     }
         //reprint menu
+        system("clear");
         cout<< " Pick a game you can't win\n";
-        cout<< "1. Hysterical 2048; 2.A bot u can't beat 3.Exit game\n";
+        cout<< "1. Hysterical 2048; 2.A bot u can't beat; 3.Snake! 4.Exit game\n";
         cin >> gameMode;
         
     }
