@@ -32,7 +32,7 @@ int randomNum(){
         return 6;
 }
 
-//找一个空白位置
+//find a space to generate number
 void generateRandomNum(){
     int occupied,row,column;
     occupied = 1;
@@ -58,7 +58,7 @@ void newGame(){
     
 }
 
-//输出用户界面
+//print out the user interface (array)
 void printUI(){
     system("clear"); //clear screen
     for(int i =0;i < 4; ++i){
@@ -72,7 +72,7 @@ void printUI(){
     cout<<"N: new game, A: left S: down, D: right , W:up, Q: quit\n";
 }
 
-//检测失败,检测是否有空位，且行，列，相邻有无相同。
+//Detective failure or not. 1. is there empty cell 2.any two neighbours are identical? horizontal and vertical
 void detectFailure(){
     failuare = true;
     for(int i=0; i<4; i++){
@@ -94,17 +94,17 @@ void detectFailure(){
 }
 
 
-//上下左右移动！！**********************************************************
+//Moving around!!! **********************************************************
 
 bool canDoMove(int row, int column, int nextRow, int nextColumn){
     if (nextRow < 0 || nextColumn < 0 || nextRow>=4 || nextColumn >= 4){
         return  false; // outside the board
     }
     if(board[row][column] == 0){
-        return false; // 该位为零！！不然就会无止尽移动
+        return false; // damn bug wasting hours 该位为零！！不然就会无止尽移动
     }
     if (board[row][column] != board[nextRow][nextColumn] && board[nextRow][nextColumn]!= 0){
-        return false; //different numbers 不同数字
+        return false; //different numbers
     }
     return true;
 }
@@ -112,11 +112,11 @@ bool canDoMove(int row, int column, int nextRow, int nextColumn){
 
 bool applyMove(int direction){
     
-    int canMove, canAddition = 0;
+    int canMove, moveAccomplished = 0;
     switch (direction) {
             //下
         case 0:
-            //用循环实现：移动一次，所有数字向该方向移动到不可移动为止。
+            //use loop to implement movement, move until not moveable. and the direction matters (variable "i" or "j" should be correspond to nextI,nextJ; otherwise there will be sequential addition in single row or column; 0336=>00012)
             do{
                 canMove = 0;
                 for(int i = 3;i >= 0 && i < 4; i -= 1)
@@ -131,7 +131,7 @@ bool applyMove(int direction){
                             board[nextI][nextJ] += board[i][j];
                             board[i][j] = 0;
                             canMove = 1;
-                            canAddition = 1;
+                            moveAccomplished = 1;
                         }
                         detectFailure();
                         
@@ -141,8 +141,8 @@ bool applyMove(int direction){
             }
             while(canMove);
             
-            //do-while全部移动后，并产生新的数字
-            if(canAddition){
+            //generate a new num if there is movement
+            if(moveAccomplished){
                 generateRandomNum();
             }
             return false;
@@ -150,7 +150,6 @@ bool applyMove(int direction){
           
             //右
         case 1:
-            //用循环实现：移动一次，所有数字向该方向移动到不可移动为止。
             do{
                 canMove = 0;
                 for(int i = 0;i >= 0 && i < 4; i += 1)
@@ -165,7 +164,7 @@ bool applyMove(int direction){
                             board[nextI][nextJ] += board[i][j];
                             board[i][j] = 0;
                             canMove = 1;
-                            canAddition = 1;
+                            moveAccomplished = 1;
                         }
                         detectFailure();
                         
@@ -175,15 +174,14 @@ bool applyMove(int direction){
             }
             while(canMove);
             
-            //do-while全部移动后，并产生新的数字
-            if(canAddition){
+            //generate a new num if there is movement
+            if(moveAccomplished){
                 generateRandomNum();
             }
             return false;
             break;
             
         case 2:
-            //用循环实现：移动一次，所有数字向该方向移动到不可移动为止。
             do{
                 canMove = 0;
                 for(int i = 0;i >= 0 && i < 4; i += 1)
@@ -198,7 +196,7 @@ bool applyMove(int direction){
                             board[nextI][nextJ] += board[i][j];
                             board[i][j] = 0;
                             canMove = 1;
-                            canAddition = 1;
+                            moveAccomplished = 1;
                         }
                         detectFailure();
                         
@@ -208,15 +206,14 @@ bool applyMove(int direction){
             }
             while(canMove);
             
-            //do-while全部移动后，并产生新的数字
-            if(canAddition){
+            //generate a new num if there is movement
+            if(moveAccomplished){
                 generateRandomNum();
             }
             return false;
             break;
             
         case 3:
-            //用循环实现：移动一次，所有数字向该方向移动到不可移动为止。
             do{
                 canMove = 0;
                 for(int i = 0;i >= 0 && i < 4; i += 1)
@@ -231,7 +228,7 @@ bool applyMove(int direction){
                             board[nextI][nextJ] += board[i][j];
                             board[i][j] = 0;
                             canMove = 1;
-                            canAddition = 1;
+                            moveAccomplished = 1;
                         }
                         detectFailure();
                         
@@ -241,8 +238,8 @@ bool applyMove(int direction){
             }
             while(canMove);
             
-            //do-while全部移动后，并产生新的数字
-            if(canAddition){
+            //generate a new num if there is movement
+            if(moveAccomplished){
                 generateRandomNum();
             }
             return false;
@@ -255,16 +252,19 @@ bool applyMove(int direction){
 
 
 void mainStream(){
-    //把用户输入的asdw指令转化为简单int,查个鸡儿ASCII表
+        
+
+    //turing user's input command into simple int. fk away ACCII
     int resignDir[128];
-    resignDir['s'] = 0;//下
-    resignDir['d'] = 1;//右
-    resignDir['w'] = 2;//上
-    resignDir['a'] = 3;//左
+    resignDir['s'] = 0;//下 down
+    resignDir['d'] = 1;//右 right
+    resignDir['w'] = 2;//上 up
+    resignDir['a'] = 3;//左 left
     
     newGame();
     
-    while(true){
+    char startGame = 'y';
+    while (startGame == 'y'){
         printUI();
         char input;
         cin >>input;
@@ -281,15 +281,23 @@ void mainStream(){
         else{
             int Direction = resignDir[input];
             
-            //移动函数
+            //Moving Function
             int success = applyMove(Direction);
             if(success){
                 cout<<" *************YOU WIN*************\n";
-                break;
+                cout << "\n Challenger! Do you wanna try again\n (y)One more game  (n)I quit\n";
+                cin >> startGame;
+                if (startGame == 'y'){
+                    newGame();
+                }
             }
             else if (failuare){
                 cout<<" *************YOU SUCK************\n";
-                break;
+                cout << "\n Game Over! Do you wanna try again\n (y)One more game  (n)I quit\n";
+                cin >> startGame;
+                if (startGame == 'y'){
+                    newGame();
+                }
             }
             else continue;
         }

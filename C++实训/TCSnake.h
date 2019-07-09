@@ -78,8 +78,8 @@ void snakeBoard::generateFood(){
     int occupied;
     occupied = 1;
     while(occupied){
-        xBoard = rand() % (N-1);//(N-2)+1
-        yBoard = rand() % (N-1);
+        xBoard = (rand() % (N-1))+1;//1到N-1
+        yBoard = (rand() % (N-1))+1;
         if(board[xBoard][yBoard] == ' '){
             occupied = 0;
         }
@@ -87,10 +87,11 @@ void snakeBoard::generateFood(){
     board[xBoard][yBoard] = FOOD;
 }
 
-//snake
+
+//snake the Snake
 class snake:public snakeBoard{
 public:
-    int pos[2][(N-2)*(N-2)]; //2D array to store the "snake", row1 stands for X pos.
+    int body[2][(N-2)*(N-2)]; //2D array to store the "snake", row1 stands for X pos.
     int x,y;
     int length;
     char direction;
@@ -118,8 +119,8 @@ snake::snake(){
     
     for(int i=0; i<4; i++)
     {
-        pos[0][i] = 1; // X坐标
-        pos[1][i] = i + 1; //y坐标
+        body[0][i] = 1; // X坐标
+        body[1][i] = i + 1; //y坐标
     }
 }
 
@@ -153,10 +154,10 @@ void snake:: update(){
         
         switch(direction)
         {
-            case 119: x= pos[0][head]-1; y= pos[1][head];break; // w向上
-            case 115: x= pos[0][head]+1; y= pos[1][head];break; // s向下
-            case 97: x= pos[0][head]; y= pos[1][head]-1;break; // a向左
-            case 100: x= pos[0][head]; y= pos[1][head]+1;break; // d向右
+            case 119: x= body[0][head]-1; y= body[1][head];break; // w向上
+            case 115: x= body[0][head]+1; y= body[1][head];break; // s向下
+            case 97: x= body[0][head]; y= body[1][head]-1;break; // a向左
+            case 100: x= body[0][head]; y= body[1][head]+1;break; // d向右
         }
         
         // hit the edge
@@ -183,22 +184,22 @@ void snake:: update(){
             }
             // update the "snake"
             board[x][y] = '@';//update head
-            board[pos[0][head]][pos[1][head]] = '*'; // head turn into body
+            board[body[0][head]][body[1][head]] = '*'; // head turn into body
             head = (head+1) % ( (N-2)*(N-2) );
-            pos[0][head] = x;
-            pos[1][head] = y;
+            body[0][head] = x;
+            body[1][head] = y;
             generateFood();
             printBoard();
         }
         // doesn't hit the food, update "snake"
         else{
-            board[pos[0][tail]][pos[1][tail]] = ' ';
+            board[body[0][tail]][body[1][tail]] = ' ';
             tail = (tail+1) % ( (N-2)*(N-2) );
-            board[pos[0][head]][pos[1][head]] = '*';
+            board[body[0][head]][body[1][head]] = '*';
             head = (head+1) % ( (N-2)*(N-2) );
-            pos[0][head] = x;
-            pos[1][head] = y;
-            board[pos[0][head]][pos[1][head]] = '@';
+            body[0][head] = x;
+            body[1][head] = y;
+            board[body[0][head]][body[1][head]] = '@';
             printBoard();
         }
         
