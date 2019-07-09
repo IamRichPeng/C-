@@ -74,7 +74,7 @@ void snakeBoard::printBoard()
 }
 
 void snakeBoard::generateFood(){
-    srand(time(0));
+    srand((int)time(0));
     int occupied;
     occupied = 1;
     while(occupied){

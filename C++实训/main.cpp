@@ -9,29 +9,19 @@
 #include<iostream>
 #include <ctime>
 #include <cstdlib>
+#include <unistd.h>
+
 #include "2048.h"
 #include "OOXXgame.h"
 #include "TCSnake.h"
 
 using namespace std;
 
-//找一个空白位置
-pair<int, int> generateUnoccupiedPosition();
-//重开游戏，
-void newGame();
-//输出用户界面
-void printUI();
-//上下左右移动！！**********************************************************
-bool canDoMove(int , int , int , int);
-bool applyMove(int);
-
-void  mainStream();
-
 
 int main(){
     
     //generate a random value for Generating new numbers at randam position
-    srand(time(0));
+    srand((int)time(0));
     
     char gameMode;
     //Print Menu
@@ -43,13 +33,15 @@ int main(){
         
     switch (gameMode) {
         case 49:
+            system("clear");
             mainStream();
             break;
-            
         case 50:
+            system("clear");
             mainStream2();
             break;
         case 51:
+            system("clear");
             mainstream3();
             break;
         default:
@@ -57,6 +49,8 @@ int main(){
             break;
     }
         //reprint menu
+        unsigned int sleep = 1000000;
+        usleep(sleep);
         system("clear");
         cout<< " Pick a game you can't win\n";
         cout<< "1. Hysterical 2048; 2.A bot u can't beat; 3.Snake! 4.Exit game\n";
