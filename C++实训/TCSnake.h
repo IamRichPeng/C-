@@ -128,7 +128,6 @@ public:
     char direction;
     int head,tail;
     long start;
-    int timeover;
     
     snake();
     void update();
@@ -169,15 +168,15 @@ void snake:: update(){
     
     while(true){
         
-        timeover = 1;
         start = clock();
-        while((timeover=(clock()-start<=gamespeed))&&!kbhit());
-        //detect is time run out of "gamespeed" interval, or there is keyboard input
-        if(timeover)
+        //in the timeintreval, if there is keyboard hit, resign direction
+        while(clock()-start<=gamespeed)
         {
-            getchar();
-            direction = getchar();
+            while(kbhit()!= 0){
+                direction = getchar();
+            }
         }
+
         
         //not WSAD
         if(!(direction==119||direction==115||direction==97 ||direction==100)) {
