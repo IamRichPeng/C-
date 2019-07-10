@@ -34,8 +34,8 @@ public:
     void generateFood();
     void getgrade();
     
-    int xBoard,yBoard;
-    int grade;
+    int foodX,foodY;
+    int level;
     double gamespeed;
     int score;
 };
@@ -66,7 +66,7 @@ void snakeBoard::printBoard()
         cout << '\t';
         for(j=0;j<N;j++)
             cout<<setw(2)<<board[i][j]; // output board
-        if(i==0) cout << "\tGrade:" << grade;
+        if(i==0) cout << "\tGrade:" << level;
         if(i==2) cout << "\tScore:" << score;
         if(i==4) cout << "\ttime interval:" << gamespeed/1000000 << "s";
         cout<<"\n";
@@ -78,21 +78,52 @@ void snakeBoard::generateFood(){
     int occupied;
     occupied = 1;
     while(occupied){
-        xBoard = (rand() % (N-1))+1;//1到N-1
-        yBoard = (rand() % (N-1))+1;
-        if(board[xBoard][yBoard] == ' '){
+        foodX = (rand() % (N-2))+1;//1到N-2
+        foodY = (rand() % (N-2))+1;
+        if(board[foodX][foodY] == ' '){
             occupied = 0;
         }
     }
-    board[xBoard][yBoard] = FOOD;
+    board[foodX][foodY] = FOOD;
 }
+
+void snakeBoard::getgrade(){
+    system("clear");
+    cout<<"\n Input the starting level you want:\n level 1: 1s moving interval \n level 2: 0.9s moving interval\n level 3: 0.8s moving interval\n level 4: 0.7s moving interval \n level 5: 0.6s moving interval\n";
+    cin >> level;
+    
+    while(level != 1 && level != 2 && level != 3 && level != 4 && level != 5 ){
+        cout<<"\n Be a lamb!!! Put a valid number!\n";
+        cin >> level;
+    }
+    switch (level) {
+        case 1:
+            gamespeed = 1000000;
+            break;
+        case 2:
+            gamespeed = 900000;
+            break;
+        case 3:
+            gamespeed = 800000;
+            break;
+        case 4:
+            gamespeed = 700000;
+            break;
+        case 5:
+            gamespeed = 600000;
+            break;
+        default:
+            break;
+    }
+}
+
 
 
 //snake the Snake
 class snake:public snakeBoard{
 public:
     int body[2][(N-2)*(N-2)]; //2D array to store the "snake", row1 stands for X pos.
-    int x,y;
+    int headX,headY;
     int length;
     char direction;
     int head,tail;
@@ -103,7 +134,16 @@ public:
     void update();
 };
 
+// initialize
 snake::snake(){
+    getgrade();
+    
+    length = 4;
+    head = 3;
+    tail = 0;
+    direction = 100;
+    score = 0;
+    
     cout<<"\n\tSNAKE game is about to begin!\n";
     for(int i=1;i>=0;i--)
     {
@@ -115,7 +155,7 @@ snake::snake(){
     }
     for(int i = 1;i<=3;i++)
         board[1][i] = '*';
-    board[1][4] = '@';
+        board[1][4] = '@';
     
     for(int i=0; i<4; i++)
     {
@@ -124,16 +164,10 @@ snake::snake(){
     }
 }
 
+//****************** Moving Function********************
 void snake:: update(){
-    score = 0;
-    head = 3;
-    tail = 0;
-    grade = 1;
-    length = 4;
-    gamespeed = 1000000;
-    direction = 100;
     
-    while(1){
+    while(true){
         
         timeover = 1;
         start = clock();
@@ -148,57 +182,70 @@ void snake:: update(){
         //not WSAD
         if(!(direction==119||direction==115||direction==97 ||direction==100)) {
             cout<<"\nPlease Respest the rule, press \"wsad\" to play";
-            cout<< direction<< "NO!!";
+            cout<< direction<< "\t NO!!";
             break;
         }
         
+        //update the head of snake x,y
         switch(direction)
         {
-            case 119: x= body[0][head]-1; y= body[1][head];break; // w向上
-            case 115: x= body[0][head]+1; y= body[1][head];break; // s向下
-            case 97: x= body[0][head]; y= body[1][head]-1;break; // a向左
-            case 100: x= body[0][head]; y= body[1][head]+1;break; // d向右
+            case 119:
+                headX= body[0][head]-1; headY= body[1][head];
+                break; // w向上
+            case 115:
+                headX= body[0][head]+1; headY= body[1][head];
+                break; // s向下
+            case 97:
+                headX= body[0][head]; headY= body[1][head]-1;
+                break; // a向左
+            case 100:
+                headX= body[0][head]; headY= body[1][head]+1;
+                break; // d向右
         }
         
         // hit the edge
-        if(x==0 || x==N-1 ||y==0 || y==N-1)  {
+        if(headX==0 || headX==N-1 ||headY==0 || headY==N-1)  {
             cout<<"\n\t******You Suck*******";
             break;
         }
         //not empty cell or food cell => means that it hit itself.
-        if (board[x][y]!=' ' && !(x==xBoard && y==yBoard)) {
+        if (board[headX][headY]!=' ' && !(headX==foodX && headY==foodY)) {
             cout<<"\n\t******You Suck*******";
             break;
         }
+        
         // hit the FOOD
-        if (x == xBoard && y == yBoard) {
+        if (headX == foodX && headY == foodY) {
             length++;
             score += 100;
             //level up: speeding up based length
             if (length>=7) {
                 length -= 7;
-                grade++;
+                level++;
                 if (gamespeed >= 200000) {
-                    gamespeed = 1100000 - grade*100000;
+                    gamespeed = 1100000 - level*100000;
                 }
             }
             // update the "snake"
-            board[x][y] = '@';//update head
+            board[headX][headY] = '@';//update head
             board[body[0][head]][body[1][head]] = '*'; // head turn into body
-            head = (head+1) % ( (N-2)*(N-2) );
-            body[0][head] = x;
-            body[1][head] = y;
+            head = head+1;
+            body[0][head] = headX;
+            body[1][head] = headY;
             generateFood();
             printBoard();
         }
         // doesn't hit the food, update "snake"
         else{
             board[body[0][tail]][body[1][tail]] = ' ';
-            tail = (tail+1) % ( (N-2)*(N-2) );
+            tail = tail+1;
+            
             board[body[0][head]][body[1][head]] = '*';
-            head = (head+1) % ( (N-2)*(N-2) );
-            body[0][head] = x;
-            body[1][head] = y;
+            
+            //update new head, both in body array and board.
+            head = head+1 ;
+            body[0][head] = headX;
+            body[1][head] = headY;
             board[body[0][head]][body[1][head]] = '@';
             printBoard();
         }
