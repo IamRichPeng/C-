@@ -19,7 +19,7 @@
 
 using namespace std;
 
-string board2[3];
+char board2[3][3];
 
 pair<int,int>  PLAYERpredicion;
 
@@ -34,7 +34,6 @@ map<string,string> bestMove;
 void newGame2(){
     currentPlayer = PLAYER1;
     for(int i  = 0; i<3 ; ++i){
-        board2[i].resize(3);
         for(int j = 0; j<3; ++j){
             board2[i][j] = '.';
         }
@@ -85,10 +84,6 @@ void printUI2(){
 }
 
 
-bool inside(pair<int, int> pos){
-    return 0<= pos.first && pos.first<3 && 0<= pos.second && pos.second<3 ;
-}
-
 
 char getCurrentPlayer(string boardInLine){
     int Xnums = 0, Onums = 0;
@@ -105,6 +100,16 @@ char getCurrentPlayer(string boardInLine){
         return PLAYER1;
 }
 
+char changePlayer(){
+    if(currentPlayer == PLAYER1)
+        return PLAYER2;
+    else if (currentPlayer == PLAYER2)
+        return PLAYER1;
+    else
+        return -1;
+}
+
+
 
 void boardInlineConvertBackToBoard(string boardInLine){
     for(int i  = 0; i<3 ; ++i)
@@ -120,15 +125,6 @@ string boardToBoardInLine(){
     return boardInLine;
 }
 
-char changePlayer(){
-    if(currentPlayer == PLAYER1)
-        return PLAYER2;
-    else if (currentPlayer == PLAYER2)
-        return PLAYER1;
-    else
-        return -1;
-}
-
 
 //using recursion to traverse all the possibilities putting currnetplayer in, and calculate who is going to win under this concidion
 
@@ -136,6 +132,7 @@ char calculateWinner(string boardInLine){
     
     if(winner.find(boardInLine) != winner.end()) // boardline 在map里，不在的话find会返回winner.end
         return winner[boardInLine]; //  search (map)winner, find the mapped value(char) according to Key value: String
+    
     boardInlineConvertBackToBoard(boardInLine);
     char state = detectVictory();
     if (state != 0) {
@@ -229,11 +226,11 @@ void  mainStream2() {
                         break;
                 }
 
-                if(inside(nextPos))
+                if(0<= nextPos.first && nextPos.first<3 && 0<= nextPos.second && nextPos.second<3 )
                     PLAYERpredicion = nextPos;
             }
             // 确定位置，存入board
-            else if (input == 'p'){
+            else if (input == 'j'){
                 if(board2[ PLAYERpredicion.first][ PLAYERpredicion.second] == '.'){
                     board2[ PLAYERpredicion.first][ PLAYERpredicion.second] = currentPlayer;
                     currentPlayer = changePlayer();
@@ -243,6 +240,10 @@ void  mainStream2() {
                     //                else
                     //                    currentPlayer = FIRST_PLAYER;
                 }
+            }
+            else{
+                cout<< "Don't embarrass yourself. Pick an empty cell!!!\n";
+                usleep(1000000);
             }
         }
         else{
