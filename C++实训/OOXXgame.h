@@ -9,40 +9,36 @@
 #ifndef OOXXgame_h
 #define OOXXgame_h
 
-#include <iostream>
-#include <string>
-#include <map>
-
-#define PLAYER1 'X'
-#define PLAYER2 'O'
-
-
-using namespace std;
-
-char board2[3][3];
-
-pair<int,int>  PLAYERpredicion;
-
-char currentPlayer;
-
-map<string,char> winner; //Key value: string, element aka mapped value(return value): char
-
-map<string,string> bestMove;
-
-
+#include "Header.h"
 
 void newGame2(){
-    currentPlayer = PLAYER1;
     for(int i  = 0; i<3 ; ++i){
         for(int j = 0; j<3; ++j){
             board2[i][j] = '.';
         }
     }
-    PLAYERpredicion.first =  PLAYERpredicion.second = 0;
+    PLAYERpredicion.first = PLAYERpredicion.second = 0;
 }
 
+void printUI2(){
+    system("clear"); //clear screen
+    for(int i  = 0; i<3 ; ++i){
+        for(int j  = 0; j<3 ; ++j)
+            if(make_pair(i, j) ==  PLAYERpredicion && !gameOver())//有人赢了就不要再输出 预判的下一个玩家。
+                cout << currentPlayer; //预判位置，new player的符号显示在上一个插入点
+            else
+                cout << board2[i][j];
+        cout<< "\n";
+    }
+}
 
-// 1 有人赢了 ； 0 继续！ ； -1 平局
+bool gameOver() {
+    if(detectVictory() == PLAYER1) return true;
+    if(detectVictory() == PLAYER2) return true;
+    if(detectVictory() == 'N') return true;
+    return false;
+}
+
 char detectVictory(){
     //horizontal and vertical
     for(int i  = 0; i<3 ; ++i){
@@ -61,44 +57,96 @@ char detectVictory(){
        && board2[2][0] == board2[1][1] && board2[2][0] == board2[0][2])
         return board2[2][0];
     
-    int isFull = -1;
-    for(int i  = 0; i<3 ; ++i)
-        for(int j  = 0; j<3 ; ++j)
-            if(board2[i][j] == '.')
-                isFull = 0;
-    return isFull;
-}
-
-
-
-void printUI2(){
-    system("clear"); //clear screen
+    char emptySpace = 'N';
     for(int i  = 0; i<3 ; ++i){
-        for(int j  = 0; j<3 ; ++j)
-            if(make_pair(i, j) ==  PLAYERpredicion && detectVictory() == 0)//有人赢了就不要再输出 预判的下一个玩家。
-                cout << currentPlayer; //预判位置，new player的符号显示在上一个插入点
-            else
-                cout << board2[i][j];
-        cout<< "\n";
+        for(int j  = 0; j<3 ; ++j){
+            if(board2[i][j] == '.')
+                emptySpace = 'Y';
+        }
     }
+    return emptySpace;
+}
+
+int score() {
+    if(detectVictory() == PLAYER1) { return 10; }
+    else if(detectVictory() == PLAYER2) { return -10; }
+    return 0; // draw
 }
 
 
 
-char getCurrentPlayer(string boardInLine){
-    int Xnums = 0, Onums = 0;
-    for( auto c : boardInLine)
-        if (c == PLAYER1) {
-            ++Xnums;
+Move minimax(char AIboard[3][3]) {
+    double bestMoveScore = 100; // -100 is arbitrary
+    Move bestMove;
+    
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(AIboard[i][j] == '.') {
+                AIboard[i][j] = PLAYER2;
+                int tempMoveScore = maxSearch(AIboard);
+                if(tempMoveScore <= bestMoveScore) {
+                    bestMoveScore = tempMoveScore;
+                    bestMove.x = i;
+                    bestMove.y = j;
+                }
+                AIboard[i][j] = '.';
+            }
         }
-        else if (c == PLAYER2) {
-            ++Onums;
-        }
-    if(Xnums > Onums)
-        return PLAYER2;
-    else
-        return PLAYER1;
+    }
+    
+    cout<<"\n "<<bestMoveScore<<"fk";
+    return bestMove;
 }
+
+
+int maxSearch(char AIboard[3][3]) {
+    if(gameOver()) return score();
+    Move bestMove;
+    
+    int bestMoveScore = -1000;
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(AIboard[i][j] == '.') {
+                AIboard[i][j] = PLAYER1;
+                int tempMoveScore = minSearch(AIboard);
+                if(tempMoveScore >= bestMoveScore) {
+                    bestMoveScore = tempMoveScore;
+                    bestMove.x = i;
+                    bestMove.y = j;
+                }
+                AIboard[i][j] = '.';
+            }
+        }
+    }
+    
+    //    cout<< "\n"<<bestMoveScore<<"maxsearch";
+    return bestMoveScore;
+}
+
+
+int minSearch(char AIboard[3][3]) {
+    if(gameOver()) return score();
+    Move bestMove;
+    
+    int bestMoveScore = 1000;
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(AIboard[i][j] == '.') {
+                AIboard[i][j] = PLAYER2;
+                int tempMove = maxSearch(AIboard);
+                if(tempMove <= bestMoveScore) {
+                    bestMoveScore = tempMove;
+                    bestMove.x = i;
+                    bestMove.y = j;
+                }
+                AIboard[i][j] = '.';
+            }
+        }
+    }
+    
+    return bestMoveScore;
+}
+
 
 char changePlayer(){
     if(currentPlayer == PLAYER1)
@@ -111,82 +159,15 @@ char changePlayer(){
 
 
 
-void boardInlineConvertBackToBoard(string boardInLine){
-    for(int i  = 0; i<3 ; ++i)
-        for(int j  = 0; j<3 ; ++j)
-            board2[i][j] = boardInLine[i * 3 + j];
-}
 
-string boardToBoardInLine(){
-    string boardInLine;
-    for(int i  = 0; i<3 ; ++i)
-        for(int j  = 0; j<3 ; ++j)
-            boardInLine += board2[i][j];
-    return boardInLine;
-}
+void mainStream2(){
+    //big loop to control one more game
+    char startGame = 'y';
+    while (startGame == 'y'){
 
-
-//using recursion to traverse all the possibilities putting currnetplayer in, and calculate who is going to win under this concidion
-
-char calculateWinner(string boardInLine){
-    
-    if(winner.find(boardInLine) != winner.end()) // boardline 在map里，不在的话find会返回winner.end
-        return winner[boardInLine]; //  search (map)winner, find the mapped value(char) according to Key value: String
-    
-    boardInlineConvertBackToBoard(boardInLine);
-    char state = detectVictory();
-    if (state != 0) {
-        winner[boardInLine] = state;
-        return state;
-    }
-    
-    // if the game is still going on , step into recursion
-    char currentPlayer = getCurrentPlayer(boardInLine); // local variable,not the global one
-    
-    char bestResult = changePlayer(); // X,O,-1
-    
-    string best_current_move;
-    
-    for(int i = 0;i<9; ++i)
-        if(boardInLine[i] == '.') {
-            boardInLine[i] = currentPlayer;
-            char next_win = calculateWinner(boardInLine);
-            if (next_win == currentPlayer) {
-                bestResult = currentPlayer;
-                best_current_move = boardInLine;
-            }
-            else if(next_win == -1 && bestResult == changePlayer()) {// draw
-                bestResult = -1;
-                best_current_move = boardInLine;
-            }
-            boardInLine[i] = '.';
-        }
-    
-    bestMove[boardInLine] = best_current_move;
-    winner[boardInLine] = bestResult;
-    return bestResult;
-    
-}
-
-
-//****************************************************************
-
-void  mainStream2() {
-    //递归，一次性列出OOXX所有的可能结果，存储在bestMove中，每一个bestMove["???"](key value) map一个最优填充方案：bestMove.second(map value)。后面调用map:bestmove就好了。
-    calculateWinner(".........");
-    
-    cout<< " Choose what you want to be: O or X\n";
-    char userchoice;
-    cin >> userchoice;
-    while(userchoice != 'O' && userchoice != 'X'){
-        cout<< " Choose what you want to be: O or X\n";
-         cin >> userchoice;
-    }
-    
-    //   cout<< winner["XXOO....."]<<" "<< bestMove["XXOO....."];
+    currentPlayer = PLAYER1;
     newGame2();
     printUI2();
-    
     
     string inputs = "wasd";
     //把用户输入的asdw指令转化为简单int
@@ -196,15 +177,15 @@ void  mainStream2() {
     resignDir['w'] = 2;//上
     resignDir['a'] = 3;//左
     
-    while(detectVictory() == 0){
-        if( currentPlayer == userchoice){
+    while(!gameOver()){
+        if(currentPlayer == PLAYER1){
             char input;
             cin >> input;
             //输入方位，选位置
             if(inputs.find(input) != string::npos){// not position,读取所有有效方位
                 pair<int, int> nextPos =  PLAYERpredicion;
                 int direction = resignDir[input];
-    
+                
                 switch (direction) {
                     case 0:
                         nextPos.first += 1;
@@ -225,20 +206,15 @@ void  mainStream2() {
                     default:
                         break;
                 }
-
+                
                 if(0<= nextPos.first && nextPos.first<3 && 0<= nextPos.second && nextPos.second<3 )
                     PLAYERpredicion = nextPos;
             }
             // 确定位置，存入board
-            else if (input == 'j'){
+            else if (input == 'p'){
                 if(board2[ PLAYERpredicion.first][ PLAYERpredicion.second] == '.'){
                     board2[ PLAYERpredicion.first][ PLAYERpredicion.second] = currentPlayer;
                     currentPlayer = changePlayer();
-                    //first edition: two players,no AI
-                    //                if ( currentPlayer == FIRST_PLAYER)
-                    //                    currentPlayer = SECOND_PLAYER;
-                    //                else
-                    //                    currentPlayer = FIRST_PLAYER;
                 }
             }
             else{
@@ -246,23 +222,29 @@ void  mainStream2() {
                 usleep(1000000);
             }
         }
+        
+        //Artificial Intelligence is invading us
         else{
-            // generate best move
-            string boardInLine = boardToBoardInLine();
-            boardInlineConvertBackToBoard(bestMove[boardInLine]);
+            Move AImove = minimax(board2);
+            board2[AImove.x][AImove.y] = PLAYER2;
             currentPlayer = changePlayer();
         }
+        
         printUI2();
     }
     
-    char state = detectVictory();
-    if( state == -1)
-        cout<< "\tDRAW!!\n";
-    else if(userchoice == state)
-        cout<< state << " You won! Congratulation\n";
-    else
-        cout<< " ********   YOU SUCK   ********\n";
     
+    if(detectVictory() == PLAYER1)
+        cout<< "\n*****You won! Congratulation*****\n";
+    else if (detectVictory() == PLAYER2)
+        cout<< " ********   YOU SUCK   ********\n";
+    else
+        cout<<" ******** Draw ********";
+        
+        cout << "\n Do you wanna try again\n (y)One more game  (n)I quit\n";
+        cin >> startGame;
+    }
 }
+
 
 #endif /* OOXXgame_h */
