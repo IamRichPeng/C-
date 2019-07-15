@@ -16,6 +16,8 @@
 #define PLAYER1 'X'
 #define PLAYER2 'O'
 
+char userchoice;
+char AIchoice;
 
 using namespace std;
 
@@ -47,7 +49,7 @@ int minSearch(char AIboard[3][3]);
 
 int maxSearch(char AIboard[3][3]) ;
 
-Move minimax(char AIboard[3][3]) ;
+Move Minimax(char AIboard[3][3]) ;
 
 char changePlayer();
 

@@ -8,10 +8,17 @@
 
 #ifndef OOXXgame_h
 #define OOXXgame_h
+//#include <map>
+//map<string,char> winner; //Key value: string, element aka mapped value(return value): char
+//
+//map<string,string> bestMove;
+//递归，一次性列出OOXX所有的可能结果，存储在bestMove中，每一个bestMove["???"](key value) map一个最优填充方案：bestMove.second(map value)。后面调用map:bestmove就好了。
+//递归算法可以在github上旧版本找到。commit: ready to add minimax
 
 #include "Header.h"
 
 void newGame2(){
+    currentPlayer = PLAYER1;
     for(int i  = 0; i<3 ; ++i){
         for(int j = 0; j<3; ++j){
             board2[i][j] = '.';
@@ -22,6 +29,7 @@ void newGame2(){
 
 void printUI2(){
     system("clear"); //clear screen
+    cout<<"Use \"wsad\" to move the inserting position, and \"p\" to insert your decision\n";
     for(int i  = 0; i<3 ; ++i){
         for(int j  = 0; j<3 ; ++j)
             if(make_pair(i, j) ==  PLAYERpredicion && !gameOver())//有人赢了就不要再输出 预判的下一个玩家。
@@ -68,21 +76,21 @@ char detectVictory(){
 }
 
 int score() {
-    if(detectVictory() == PLAYER1) { return 10; }
-    else if(detectVictory() == PLAYER2) { return -10; }
+    if(detectVictory() == userchoice) { return 10; }
+    else if(detectVictory() == AIchoice) { return -10; }
     return 0; // draw
 }
 
 
 
-Move minimax(char AIboard[3][3]) {
+Move Minimax(char AIboard[3][3]) {
     double bestMoveScore = 100; // -100 is arbitrary
     Move bestMove;
     
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
             if(AIboard[i][j] == '.') {
-                AIboard[i][j] = PLAYER2;
+                AIboard[i][j] = AIchoice;
                 int tempMoveScore = maxSearch(AIboard);
                 if(tempMoveScore <= bestMoveScore) {
                     bestMoveScore = tempMoveScore;
@@ -94,7 +102,7 @@ Move minimax(char AIboard[3][3]) {
         }
     }
     
-    cout<<"\n "<<bestMoveScore<<"fk";
+   // cout<<"\n "<<bestMoveScore<<" suppose to be 0";
     return bestMove;
 }
 
@@ -107,10 +115,10 @@ int maxSearch(char AIboard[3][3]) {
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
             if(AIboard[i][j] == '.') {
-                AIboard[i][j] = PLAYER1;
-                int tempMoveScore = minSearch(AIboard);
-                if(tempMoveScore >= bestMoveScore) {
-                    bestMoveScore = tempMoveScore;
+                AIboard[i][j] = userchoice;
+                int tempScore = minSearch(AIboard);
+                if(tempScore >= bestMoveScore) {
+                    bestMoveScore = tempScore;
                     bestMove.x = i;
                     bestMove.y = j;
                 }
@@ -132,10 +140,10 @@ int minSearch(char AIboard[3][3]) {
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
             if(AIboard[i][j] == '.') {
-                AIboard[i][j] = PLAYER2;
-                int tempMove = maxSearch(AIboard);
-                if(tempMove <= bestMoveScore) {
-                    bestMoveScore = tempMove;
+                AIboard[i][j] = AIchoice;
+                int tempScore = maxSearch(AIboard);
+                if(tempScore <= bestMoveScore) {
+                    bestMoveScore = tempScore;
                     bestMove.x = i;
                     bestMove.y = j;
                 }
@@ -164,8 +172,18 @@ void mainStream2(){
     //big loop to control one more game
     char startGame = 'y';
     while (startGame == 'y'){
+        
+        cout<< " Choose what you want to be: O or X, and X go first.\n";
+        cin >> userchoice;
+        while(userchoice != 'O' && userchoice != 'X'){
+            cout<< " Choose what you want to be: O or X, and X go first.\n";
+            cin >> userchoice;
+        }
 
-    currentPlayer = PLAYER1;
+     //   currentPlayer = userchoice , 不想user总是先手，把设置currentplayer放在newgame里了
+    if(userchoice == PLAYER1) AIchoice = PLAYER2;
+    else AIchoice = PLAYER1;
+        
     newGame2();
     printUI2();
     
@@ -178,7 +196,7 @@ void mainStream2(){
     resignDir['a'] = 3;//左
     
     while(!gameOver()){
-        if(currentPlayer == PLAYER1){
+        if(currentPlayer == userchoice){
             char input;
             cin >> input;
             //输入方位，选位置
@@ -216,17 +234,21 @@ void mainStream2(){
                     board2[ PLAYERpredicion.first][ PLAYERpredicion.second] = currentPlayer;
                     currentPlayer = changePlayer();
                 }
+                else{
+                    cout<< "Don't embarrass yourself. Pick an empty cell!!!\n";
+                    usleep(1000000);
+                }
             }
             else{
-                cout<< "Don't embarrass yourself. Pick an empty cell!!!\n";
+                cout<< "Don't embarrass yourself. Input a valid key!!!\n";
                 usleep(1000000);
             }
         }
         
         //Artificial Intelligence is invading us
         else{
-            Move AImove = minimax(board2);
-            board2[AImove.x][AImove.y] = PLAYER2;
+            Move AImove = Minimax(board2);
+            board2[AImove.x][AImove.y] = AIchoice;
             currentPlayer = changePlayer();
         }
         
@@ -234,9 +256,9 @@ void mainStream2(){
     }
     
     
-    if(detectVictory() == PLAYER1)
+    if(detectVictory() == userchoice)
         cout<< "\n*****You won! Congratulation*****\n";
-    else if (detectVictory() == PLAYER2)
+    else if (detectVictory() == AIchoice)
         cout<< " ********   YOU SUCK   ********\n";
     else
         cout<<" ******** Draw ********";
